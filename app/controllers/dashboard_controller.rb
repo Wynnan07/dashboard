@@ -11,6 +11,17 @@ class DashboardController < ApplicationController
     @statuses = get_statuses
     @projects = get_projects
     @issues = get_issues(@selected_project_id, show_sub_tasks)
+    
+    selected_project = @selected_project_id.present? ? Project.find_by(id: @selected_project_id) : nil
+
+    if selected_project
+      project_users = selected_project.users.active.sorted
+      @authors = project_users
+      @assignees = project_users
+    else
+      @authors = User.active.sorted
+      @assignees = User.active.sorted  # Или User.active.where(...) если нужно ограничить, напр. по проекту
+    end
   end
 
   def set_issue_status
@@ -80,6 +91,8 @@ class DashboardController < ApplicationController
     end
 
     items = id_array.empty? ? Issue.visible : Issue.visible.where(:projects => {:id => id_array})
+    items = items.where(author_id: params[:author_id]) if params[:author_id].present?
+    items = items.where(assigned_to_id: params[:assigned_to_id]) if params[:assigned_to_id].present?
 
     unless Setting.plugin_dashboard['display_closed_statuses']
       items = items.open
@@ -91,11 +104,11 @@ class DashboardController < ApplicationController
         :subject => item.subject,
         :status_id => item.status.id,
         :project_id => item.project.id,
-        :created_on => item.created_on,
+        :created_at => item.start_date,
         :author => item.author.name(User::USER_FORMATS[:firstname_lastname]),
         :executor => item.assigned_to.nil? ? '' : item.assigned_to.name
       }
     end
-    data.sort_by { |item| item[:created_on] }
+    data.sort_by { |item| item[:created_at]}
   end
 end

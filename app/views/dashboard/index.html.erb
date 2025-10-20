@@ -27,6 +27,22 @@
 	</div>
 <% end %>
 
+<% if @selected_project_id.present? %>
+	<div class="filters">
+	  <%= form_tag dashboard_path, method: :get do %>
+	    <%= hidden_field_tag :project_id, @selected_project_id if @selected_project_id %>
+	
+	    <label for="author_id"><%= l(:label_author) %></label>
+	    <%= select_tag :author_id, options_from_collection_for_select(@authors, :id, :name, params[:author_id]), include_blank: l(:label_all) %>
+	
+	    <label for="assigned_to_id"><%= l(:label_assigned_to) %></label>
+	    <%= select_tag :assigned_to_id, options_from_collection_for_select(@assignees, :id, :name, params[:assigned_to_id]), include_blank: l(:label_all) %>
+	
+	    <%= submit_tag l(:button_apply) %>
+	  <% end %>
+	</div>
+<% end %> 
+
 <div class="issues_container">
 	<% @statuses.each do |status_id, status| %>
 		<div class="status_column" data-id="<%= status_id %>">
@@ -40,7 +56,7 @@
 					<div class="issue_card" style="border-color: <%= project_color %>" data-id="<%= issue[:id] %>" onclick="goToIssue(<%= issue[:id] %>)">
 						<span class="issue_card_id"> <%= "#" + issue[:id].to_s %> </span>
 						<div class="issue_card_header">
-							<span class="issue_card_header_date"><%= I18n.l(issue[:created_on], format: :long) %></span>
+							<span class="issue_card_header_date"><%= issue[:created_at] %></span>
 							<% if @show_project_badge %>
 								<div class="issue_card_header_project" style="background-color: <%= project_color %>"><%= project_name %></div>
 							<% end %>

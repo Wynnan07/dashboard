@@ -10,4 +10,8 @@ ru:
   settings_enable_drag_and_drop: '"Drag and drop" изменение статуса'
   settings_generate_colors: "Сгенерировать цвета"
   executor_not_set: "Не установлен"
+  label_author: "Постановщик"
+  label_assigned_to: "Исполнитель"
+  executor_not_set: "Не назначен"
+  button_apply: "Применить"
   label_all: "Все"
